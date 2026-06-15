@@ -21,6 +21,17 @@ python3 line_history_poc.py import --chat "Sample Chat" --file fixtures/sample_l
 python3 line_history_poc.py health-report
 ```
 
+Or install the local CLI entrypoint in a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e .
+local-chat-memory init
+local-chat-memory import --chat "Sample Chat" --file fixtures/sample_line_export_ja.txt
+local-chat-memory health-report
+```
+
 Default DB path:
 
 ```text
@@ -54,6 +65,19 @@ python3 line_history_poc.py scan-downloads --config config.local.json --auto-dis
 ```
 
 ## Common Commands
+
+```bash
+local-chat-memory status
+local-chat-memory search "invoice" --limit 20
+local-chat-memory people
+local-chat-memory person-context "Client A"
+local-chat-memory alias-candidates
+local-chat-memory wiki-candidates --min-messages 20
+local-chat-memory promote-candidates --redact
+local-chat-memory export-promote-review --redact --output exports/promote-review.md
+```
+
+The original script form remains supported:
 
 ```bash
 python3 line_history_poc.py status
@@ -110,5 +134,6 @@ python3 line_history_poc.py export-promote-review --redact --output exports/prom
 
 ```bash
 python3 -m unittest discover tests
-python3 -m py_compile line_history_poc.py scripts/export-current-line-chat.py
+python3 -m py_compile line_history_poc.py local_chat_memory/*.py scripts/export-current-line-chat.py
+python3 -m local_chat_memory doctor --config config.example.json
 ```

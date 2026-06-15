@@ -27,7 +27,12 @@ The repository candidate contains synthetic fixtures, source code, docs, tests, 
 
 ```bash
 python3 -m unittest discover tests
-python3 -m py_compile line_history_poc.py scripts/export-current-line-chat.py
+python3 -m py_compile line_history_poc.py local_chat_memory/*.py scripts/export-current-line-chat.py
 python3 line_history_poc.py doctor --config config.example.json
+python3 -m local_chat_memory doctor --config config.example.json
 rg --hidden -n "private-name-or-client-name|private-workspace-path|old-project-name" .
 ```
+
+## Post-Public Packaging Pass
+
+After adding `pyproject.toml`, the `local-chat-memory` console entrypoint, and additional synthetic fixtures, the privacy scan was rerun against public-visible files. No private workspace path, original private project name, real chat name, secret pattern, or real DB/export artifact was found. The only generated packaging metadata is ignored via `*.egg-info/`.

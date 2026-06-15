@@ -8,7 +8,7 @@ Before publishing this repository:
 - Confirm no export backups or generated private reports are present.
 - Run a private-name scan over the repository.
 - Choose and add a license.
-- Decide whether to rename `line_history_poc.py` to a package/CLI entrypoint.
+- Confirm package metadata and CLI entrypoint work.
 - Create the GitHub repository.
 - Enable GitHub Actions.
 - Open initial issues for parser variants, packaging, and docs.
@@ -23,6 +23,7 @@ Verification:
 
 ```bash
 python3 -m unittest discover tests
-python3 -m py_compile line_history_poc.py scripts/export-current-line-chat.py
+python3 -m py_compile line_history_poc.py local_chat_memory/*.py scripts/export-current-line-chat.py
 python3 line_history_poc.py doctor --config config.example.json
+python3 -m local_chat_memory doctor --config config.example.json
 ```

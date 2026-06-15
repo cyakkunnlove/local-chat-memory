@@ -125,6 +125,36 @@ class LineHistoryPocTest(unittest.TestCase):
         self.assertEqual(rows[1]["sender"], "Me")
         self.assertEqual(rows[2]["sent_at"], "2026-06-15 12:39:00")
 
+    def test_bracketed_export_format(self):
+        result = poc.import_export(
+            self.con,
+            self.db_path,
+            "Bracketed Chat",
+            "personal",
+            self.fixture("sample_line_export_bracketed.txt"),
+        )
+        rows = self.con.execute("SELECT sent_at, sender, body FROM messages ORDER BY id").fetchall()
+
+        self.assertEqual(result["parsed"], 3)
+        self.assertEqual(rows[0]["sent_at"], "2026-06-15 14:20:00")
+        self.assertEqual(rows[1]["sender"], "Me")
+        self.assertEqual(rows[2]["body"], "Thanks.\nThis is a continuation line.")
+
+    def test_iso_tab_export_format(self):
+        result = poc.import_export(
+            self.con,
+            self.db_path,
+            "ISO Tabs",
+            "personal",
+            self.fixture("sample_line_export_iso_tabs.txt"),
+        )
+        rows = self.con.execute("SELECT sent_at, sender, body FROM messages ORDER BY id").fetchall()
+
+        self.assertEqual(result["parsed"], 3)
+        self.assertEqual(rows[0]["sent_at"], "2026-06-15 14:20:00")
+        self.assertEqual(rows[2]["sent_at"], "2026-06-16 09:10:00")
+        self.assertEqual(rows[2]["body"], "Can you send the invoice by Friday?")
+
     def test_chat_metadata_and_search_rows_support_wiki_link(self):
         poc.import_export(
             self.con,

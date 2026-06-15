@@ -1,0 +1,5 @@
+include LICENSE
+include README.md
+include schema.sql
+recursive-include fixtures *.txt
+recursive-include scripts *.py *.sh

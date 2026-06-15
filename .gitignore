@@ -8,4 +8,6 @@ config.local.json
 *.sqlite3
 __pycache__/
 *.pyc
+.venv/
+*.egg-info/
 [LINE]*.txt

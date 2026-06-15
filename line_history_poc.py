@@ -60,6 +60,11 @@ MESSAGE_PATTERNS = [
         r"(?P<time>\d{1,2}:\d{2})(?::\d{2})?\t"
         r"(?P<sender>[^\t]+)\t(?P<body>.*)$"
     ),
+    re.compile(
+        r"^(?P<date>\d{4}[./-]\d{1,2}[./-]\d{1,2})\t"
+        r"(?P<time>\d{1,2}:\d{2})(?::\d{2})?\t"
+        r"(?P<sender>[^\t]+)\t(?P<body>.*)$"
+    ),
     re.compile(r"^(?P<time>\d{1,2}:\d{2})(?::\d{2})?\t(?P<sender>[^\t]+)\t(?P<body>.*)$"),
     re.compile(r"^(?P<time>\d{1,2}:\d{2})(?::\d{2})?\s{2,}(?P<sender>.+?)\s{2,}(?P<body>.*)$"),
 ]
@@ -203,14 +208,6 @@ def parse_export_text(text: str, participants: list[str] | None = None) -> list[
     for line_no, line in enumerate(text.splitlines(), start=1):
         if not line.strip():
             continue
-        date_line = parse_date_line(line)
-        if date_line:
-            if current:
-                current.line_end = line_no - 1
-                messages.append(current)
-                current = None
-            current_date = date_line
-            continue
         parsed = parse_message_line(line, current_date, participants)
         if parsed:
             if current:
@@ -218,6 +215,14 @@ def parse_export_text(text: str, participants: list[str] | None = None) -> list[
                 messages.append(current)
             sent_date, sent_time, sender, body = parsed
             current = ParsedMessage(sent_date, sent_time, sender, body, line_no, line_no)
+            continue
+        date_line = parse_date_line(line)
+        if date_line:
+            if current:
+                current.line_end = line_no - 1
+                messages.append(current)
+                current = None
+            current_date = date_line
             continue
         if current:
             current.body = f"{current.body}\n{line.rstrip()}".strip()

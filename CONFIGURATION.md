@@ -8,6 +8,12 @@ The importer can run with one-off `import` commands, but repeated use is easier 
 python3 line_history_poc.py init-config --output config.local.json
 ```
 
+If installed with `python3 -m pip install -e .`, the equivalent command is:
+
+```bash
+local-chat-memory init-config --output config.local.json
+```
+
 Edit `config.local.json`, then validate it:
 
 ```bash
