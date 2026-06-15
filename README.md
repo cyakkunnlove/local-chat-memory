@@ -155,3 +155,8 @@ python3 -m unittest discover tests
 python3 -m py_compile line_history_poc.py local_chat_memory/*.py scripts/export-current-line-chat.py
 python3 -m local_chat_memory doctor --config config.example.json
 ```
+
+## Release Notes
+
+- `CHANGELOG.md`
+- `RELEASE_AUDIT_2026-06-15_v0.1.0.md`

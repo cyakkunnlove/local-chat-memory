@@ -1,5 +1,29 @@
 # Public Release Checklist
 
+## v0.1.0 Status
+
+Release target: `v0.1.0`
+
+- [x] Confirm no real chat exports are present.
+- [x] Confirm no SQLite database is present.
+- [x] Confirm no `config.local.json` is present.
+- [x] Confirm no export backups or generated private reports are present.
+- [x] Run a private-name scan over the repository.
+- [x] Confirm no common secret/token patterns are present.
+- [x] Confirm license is Apache-2.0.
+- [x] Confirm privacy statement is present in `PRIVACY.md`.
+- [x] Confirm security policy is present in `SECURITY.md`.
+- [x] Confirm package metadata and CLI entrypoint work.
+- [x] Confirm GitHub Actions pass.
+- [x] Add changelog or release notes.
+- [x] Add release audit summary.
+- [ ] Create and push `v0.1.0` tag.
+- [ ] Create GitHub release.
+
+Audit summary: `RELEASE_AUDIT_2026-06-15_v0.1.0.md`
+
+## Original Public Seed Checklist
+
 Before publishing this repository:
 
 - Confirm no real chat exports are present.
