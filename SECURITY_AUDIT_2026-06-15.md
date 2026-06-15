@@ -40,3 +40,7 @@ After adding `pyproject.toml`, the `local-chat-memory` console entrypoint, and a
 ## Reviewed Promote Workflow Pass
 
 After adding `apply-promote-review`, `promoted`, promote workflow docs, and synthetic examples, the privacy scan was rerun against public-visible files. The promoted output lists human-reviewed `distilled_fact` values and local `promote_to` hints, not raw message bodies. Redacted checklist mode remains available for demos and support.
+
+## Parser Variant Pass
+
+After adding dash-separated and WhatsApp-style synthetic fixtures, the privacy scan was rerun against public-visible files. The new fixtures use only synthetic `Client A` / `Me` content and do not include real chat exports.

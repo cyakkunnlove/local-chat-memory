@@ -13,6 +13,14 @@ The first supported format is LINE desktop text exports, but the core model is g
 
 No credentials, private app database parsing, screenshots, or external AI API calls are required.
 
+Synthetic parser fixtures currently cover:
+
+- LINE-style date sections with tab-separated messages
+- bracketed timestamps
+- ISO date/time tab-separated rows
+- `YYYY-MM-DD HH:MM - sender: body` rows
+- WhatsApp-style `M/D/YY, h:mm PM - sender: body` rows
+
 ## Quick Start
 
 ```bash

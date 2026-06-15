@@ -65,6 +65,17 @@ MESSAGE_PATTERNS = [
         r"(?P<time>\d{1,2}:\d{2})(?::\d{2})?\t"
         r"(?P<sender>[^\t]+)\t(?P<body>.*)$"
     ),
+    re.compile(
+        r"^(?P<date>\d{4}[./-]\d{1,2}[./-]\d{1,2})\s+"
+        r"(?P<time>\d{1,2}:\d{2})(?::\d{2})?\s+-\s+"
+        r"(?P<sender>[^:：]+)[:：]\s*(?P<body>.*)$"
+    ),
+    re.compile(
+        r"^(?P<date>\d{1,2}/\d{1,2}/\d{2,4}),?\s+"
+        r"(?P<time>\d{1,2}:\d{2})(?:\s*(?P<ampm>[AP]M))?\s+-\s+"
+        r"(?P<sender>[^:：]+)[:：]\s*(?P<body>.*)$",
+        re.I,
+    ),
     re.compile(r"^(?P<time>\d{1,2}:\d{2})(?::\d{2})?\t(?P<sender>[^\t]+)\t(?P<body>.*)$"),
     re.compile(r"^(?P<time>\d{1,2}:\d{2})(?::\d{2})?\s{2,}(?P<sender>.+?)\s{2,}(?P<body>.*)$"),
 ]
@@ -146,8 +157,29 @@ def normalize_alias_key(value: str) -> str:
 
 def normalize_date(value: str) -> str:
     value = value.replace(".", "/").replace("-", "/")
-    year, month, day = [int(part) for part in value.split("/")[:3]]
+    parts = [int(part) for part in value.split("/")[:3]]
+    if len(str(parts[0])) == 4:
+        year, month, day = parts
+    else:
+        first, second, year = parts
+        if year < 100:
+            year += 2000
+        if first > 12:
+            day, month = first, second
+        else:
+            month, day = first, second
     return f"{year:04d}-{month:02d}-{day:02d}"
+
+
+def normalize_time(value: str, ampm: str | None = None) -> str:
+    hour, minute = [int(part) for part in value.split(":")[:2]]
+    if ampm:
+        ampm_norm = ampm.upper()
+        if ampm_norm == "PM" and hour != 12:
+            hour += 12
+        if ampm_norm == "AM" and hour == 12:
+            hour = 0
+    return f"{hour:02d}:{minute:02d}"
 
 
 def parse_date_line(line: str) -> str | None:
@@ -172,12 +204,10 @@ def match_space_participant(line: str, current_date: str | None, participants: l
             body = rest[len(prefix) :].strip()
         else:
             continue
-        hour, minute = [int(part) for part in match.group("time").split(":")[:2]]
-        return current_date, f"{hour:02d}:{minute:02d}", participant, body
+        return current_date, normalize_time(match.group("time")), participant, body
     fallback = re.match(r"(?P<sender>\S+)\s+(?P<body>.*)$", rest)
     if fallback:
-        hour, minute = [int(part) for part in match.group("time").split(":")[:2]]
-        return current_date, f"{hour:02d}:{minute:02d}", fallback.group("sender"), fallback.group("body").strip()
+        return current_date, normalize_time(match.group("time")), fallback.group("sender"), fallback.group("body").strip()
     return None
 
 
@@ -189,11 +219,10 @@ def parse_message_line(line: str, current_date: str | None, participants: list[s
             continue
         date = match.groupdict().get("date")
         sent_date = normalize_date(date) if date else current_date
-        sent_time = match.group("time")
-        hour, minute = [int(part) for part in sent_time.split(":")[:2]]
+        sent_time = normalize_time(match.group("time"), match.groupdict().get("ampm"))
         sender = normalize_space(match.group("sender"))
         body = match.group("body").strip()
-        return sent_date, f"{hour:02d}:{minute:02d}", sender, body
+        return sent_date, sent_time, sender, body
     if participants:
         return match_space_participant(stripped, current_date, participants)
     return None

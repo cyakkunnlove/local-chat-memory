@@ -37,3 +37,11 @@ Initial public release.
 - The first parser target is LINE desktop text exports; additional chat export variants are tracked in issue #2.
 - The macOS LINE helper is optional desktop automation and should be treated as best-effort.
 - No PyPI package is published yet; use a virtual environment and editable install from GitHub/source.
+
+## Unreleased
+
+### Added
+
+- Synthetic fixture and parser coverage for `YYYY-MM-DD HH:MM - sender: body` rows.
+- Synthetic fixture and parser coverage for WhatsApp-style `M/D/YY, h:mm PM - sender: body` rows.
+- AM/PM timestamp normalization for supported message formats.
