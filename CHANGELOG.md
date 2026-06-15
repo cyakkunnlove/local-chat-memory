@@ -47,3 +47,8 @@ Initial public release.
 - AM/PM timestamp normalization for supported message formats.
 - `docs/PUBLISHING.md` with a TestPyPI-first publishing checklist.
 - Distribution audit script for checking built sdist/wheel contents before upload.
+- CI smoke check that installs the built wheel into a fresh virtual environment.
+
+### Fixed
+
+- Include the SQLite schema in built wheels so installed CLI commands can initialize databases outside the source tree.

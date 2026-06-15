@@ -33,6 +33,7 @@ Publishing to PyPI is intentionally deferred. Before TestPyPI or PyPI upload:
 - [x] Add build verification to CI.
 - [x] Add metadata validation with `twine check`.
 - [x] Add a distribution audit for sdist/wheel contents.
+- [x] Add a fresh wheel install smoke check to CI.
 - [x] Document TestPyPI-first upload order.
 - [ ] Confirm package name availability immediately before upload.
 - [ ] Run final privacy/security scan on the exact release commit.
@@ -40,6 +41,8 @@ Publishing to PyPI is intentionally deferred. Before TestPyPI or PyPI upload:
 - [ ] Publish to PyPI only after explicit release approval.
 
 Checklist doc: `docs/PUBLISHING.md`
+Version note: `v0.1.0` is already tagged on GitHub. Use `v0.1.1` or later for any
+future TestPyPI/PyPI upload so the uploaded package matches its release tag.
 
 ## Original Public Seed Checklist
 

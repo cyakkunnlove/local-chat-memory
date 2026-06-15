@@ -27,3 +27,12 @@ jobs:
           python3 -m build
           python3 -m twine check dist/*
           python3 scripts/audit-dist.py dist/*
+      - name: Install built wheel in fresh venv
+        run: |
+          smoke_dir="$(mktemp -d)"
+          python3 -m venv "$smoke_dir/venv"
+          "$smoke_dir/venv/bin/python" -m pip install dist/*.whl
+          cd "$smoke_dir"
+          LOCAL_CHAT_MEMORY_DB="$smoke_dir/local-chat-memory.db" "$smoke_dir/venv/bin/local-chat-memory" init
+          LOCAL_CHAT_MEMORY_DB="$smoke_dir/local-chat-memory.db" "$smoke_dir/venv/bin/local-chat-memory" status
+          "$smoke_dir/venv/bin/python" -m local_chat_memory doctor --config "$GITHUB_WORKSPACE/config.example.json"

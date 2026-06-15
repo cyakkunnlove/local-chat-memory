@@ -7,6 +7,7 @@ import argparse
 import shutil
 import csv
 import hashlib
+from importlib import resources
 import json
 import re
 import sqlite3
@@ -283,9 +284,15 @@ def connect(db_path: Path) -> sqlite3.Connection:
 
 
 def init_db(con: sqlite3.Connection) -> None:
-    con.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
+    con.executescript(read_schema_text())
     ensure_migrations(con)
     con.commit()
+
+
+def read_schema_text() -> str:
+    if SCHEMA_PATH.exists():
+        return SCHEMA_PATH.read_text(encoding="utf-8")
+    return resources.files("local_chat_memory").joinpath("schema.sql").read_text(encoding="utf-8")
 
 
 def ensure_migrations(con: sqlite3.Connection) -> None:

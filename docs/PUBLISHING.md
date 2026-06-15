@@ -7,6 +7,10 @@ The package is still alpha software. TestPyPI and PyPI installs should be used
 at the user's own risk, with local backups and human review before any promoted
 facts are copied into another system.
 
+`v0.1.0` already exists as a GitHub tag. Any future TestPyPI/PyPI upload should
+use a new release tag, `v0.1.1` or later, so package artifacts match the tagged
+source exactly.
+
 ## Pre-Publish Checks
 
 Run these checks from a clean checkout:
@@ -22,11 +26,18 @@ find . -maxdepth 1 -name "*.egg-info" -exec rm -rf {} +
 /tmp/local-chat-memory-build-venv/bin/python -m build
 /tmp/local-chat-memory-build-venv/bin/python -m twine check dist/*
 python3 scripts/audit-dist.py dist/*
+python3 -m venv /tmp/local-chat-memory-wheel-smoke
+/tmp/local-chat-memory-wheel-smoke/bin/python -m pip install dist/*.whl
+LOCAL_CHAT_MEMORY_DB=/tmp/local-chat-memory-wheel-smoke.db \
+  /tmp/local-chat-memory-wheel-smoke/bin/local-chat-memory init
+LOCAL_CHAT_MEMORY_DB=/tmp/local-chat-memory-wheel-smoke.db \
+  /tmp/local-chat-memory-wheel-smoke/bin/local-chat-memory status
 ```
 
 Before uploading anywhere, confirm:
 
 - the package name is still available and acceptable on TestPyPI/PyPI
+- the built wheel can initialize and inspect a fresh SQLite database outside the source tree
 - `dist/` contains only the current sdist and wheel
 - the distribution audit passes
 - no real chat exports, SQLite databases, private configs, or export backups are included
