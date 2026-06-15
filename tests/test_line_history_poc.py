@@ -2,6 +2,7 @@ import sqlite3
 import tempfile
 import unittest
 import importlib.util
+import textwrap
 from pathlib import Path
 
 import sys
@@ -373,6 +374,74 @@ class LineHistoryPocTest(unittest.TestCase):
         review = poc.export_promote_review(self.con, review_path, "Sample Chat", 100, redact=True)
         self.assertEqual(review["output"], str(review_path))
         self.assertIn("distilled_fact", review_path.read_text(encoding="utf-8"))
+
+    def test_apply_promote_review_records_reviewed_facts_only(self):
+        poc.import_export(
+            self.con,
+            self.db_path,
+            "Sample Chat",
+            "personal",
+            self.fixture("sample_line_export_ja.txt"),
+        )
+        ids = [
+            row["id"]
+            for row in self.con.execute(
+                "SELECT id FROM messages WHERE classification = 'message' ORDER BY id LIMIT 3"
+            ).fetchall()
+        ]
+        review_path = Path(self.tmp.name) / "review.md"
+        review_path.write_text(
+            textwrap.dedent(
+                f"""
+            # LINE Promote Review
+
+            - [x] message_id: {ids[0]}
+              - sent_at: 2026-06-15 14:20:00
+              - sender: Client A
+              - reasons: todo, deadline
+              - body: [redacted len=40]
+              - distilled_fact: TODO: Send the revised handout by Friday.
+              - promote_to: todos/client-a.md
+
+            - [ ] message_id: {ids[1]}
+              - sent_at: 2026-06-15 14:21:00
+              - sender: Me
+              - reasons: decision
+              - body: [redacted len=10]
+              - distilled_fact: Decision: Ignore unchecked items.
+              - promote_to: decisions/sample.md
+
+            - [x] message_id: {ids[2]}
+              - sent_at: 2026-06-15 14:23:00
+              - sender: Client A
+              - reasons: question
+              - body: [redacted len=20]
+              - distilled_fact:
+              - promote_to: questions/client-a.md
+            """
+            ),
+            encoding="utf-8",
+        )
+
+        dry_run = poc.apply_promote_review(self.con, review_path, dry_run=True)
+        self.assertEqual(dry_run["applied_count"], 1)
+        self.assertEqual(
+            self.con.execute("SELECT COUNT(*) FROM message_events WHERE event_type = 'promoted'").fetchone()[0],
+            0,
+        )
+
+        result = poc.apply_promote_review(self.con, review_path)
+        promoted = poc.promoted_rows(self.con)
+        pending_count = self.con.execute(
+            "SELECT COUNT(*) FROM messages WHERE id = ? AND ai_processed = 0",
+            (ids[0],),
+        ).fetchone()[0]
+
+        self.assertEqual(result["applied_count"], 1)
+        self.assertEqual(result["skipped_count"], 2)
+        self.assertEqual(promoted[0]["distilled_fact"], "TODO: Send the revised handout by Friday.")
+        self.assertEqual(promoted[0]["promote_to"], "todos/client-a.md")
+        self.assertEqual(pending_count, 0)
 
 
 if __name__ == "__main__":

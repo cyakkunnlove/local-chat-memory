@@ -75,6 +75,8 @@ local-chat-memory alias-candidates
 local-chat-memory wiki-candidates --min-messages 20
 local-chat-memory promote-candidates --redact
 local-chat-memory export-promote-review --redact --output exports/promote-review.md
+local-chat-memory apply-promote-review --input exports/promote-review.md --dry-run
+local-chat-memory promoted
 ```
 
 The original script form remains supported:
@@ -88,7 +90,23 @@ python3 line_history_poc.py alias-candidates
 python3 line_history_poc.py wiki-candidates --min-messages 20
 python3 line_history_poc.py promote-candidates --redact
 python3 line_history_poc.py export-promote-review --redact --output exports/promote-review.md
+python3 line_history_poc.py apply-promote-review --input exports/promote-review.md --dry-run
+python3 line_history_poc.py promoted
 ```
+
+## Promote Reviewed Facts
+
+Candidate extraction is local and deterministic. The safer workflow is:
+
+```bash
+local-chat-memory export-promote-review --redact --output exports/promote-review.md
+# Edit the checklist locally: check reviewed items and fill distilled_fact/promote_to.
+local-chat-memory apply-promote-review --input exports/promote-review.md --dry-run
+local-chat-memory apply-promote-review --input exports/promote-review.md
+local-chat-memory promoted
+```
+
+See `docs/PROMOTE_WORKFLOW.md` and `examples/promote-review-reviewed.md` for TODO, decision, question, person note, and project note examples.
 
 ## Desktop Export Helper
 

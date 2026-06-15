@@ -1354,6 +1354,147 @@ def export_promote_review(
     return {"output": str(target), "candidate_count": len(candidates), "redacted": redact}
 
 
+REVIEW_ITEM_RE = re.compile(r"^- \[(?P<checked>[ xX])\]\s+message_id:\s*(?P<message_id>\d+)\s*$")
+REVIEW_FIELD_RE = re.compile(r"^\s+- (?P<key>[a-zA-Z_]+):\s*(?P<value>.*)$")
+
+
+def parse_promote_review_markdown(path: Path) -> list[dict]:
+    items: list[dict] = []
+    current: dict | None = None
+    for line_no, line in enumerate(path.expanduser().read_text(encoding="utf-8").splitlines(), start=1):
+        item_match = REVIEW_ITEM_RE.match(line)
+        if item_match:
+            current = {
+                "message_id": int(item_match.group("message_id")),
+                "checked": item_match.group("checked").lower() == "x",
+                "line": line_no,
+                "fields": {},
+            }
+            items.append(current)
+            continue
+        field_match = REVIEW_FIELD_RE.match(line)
+        if current and field_match:
+            current["fields"][field_match.group("key")] = field_match.group("value").strip()
+    return items
+
+
+def apply_promote_review(
+    con: sqlite3.Connection,
+    input_path: Path,
+    dry_run: bool = False,
+    mark_processed_flag: bool = True,
+) -> dict:
+    init_db(con)
+    items = parse_promote_review_markdown(input_path)
+    applied = []
+    skipped = []
+    for item in items:
+        message_id = int(item["message_id"])
+        fields = item["fields"]
+        if not item["checked"]:
+            skipped.append({"message_id": message_id, "reason": "not_checked"})
+            continue
+        distilled_fact = fields.get("distilled_fact", "").strip()
+        promote_to = fields.get("promote_to", "").strip()
+        if not distilled_fact:
+            skipped.append({"message_id": message_id, "reason": "missing_distilled_fact"})
+            continue
+        if not promote_to:
+            skipped.append({"message_id": message_id, "reason": "missing_promote_to"})
+            continue
+        row = con.execute("SELECT id FROM messages WHERE id = ?", (message_id,)).fetchone()
+        if not row:
+            skipped.append({"message_id": message_id, "reason": "message_not_found"})
+            continue
+        note = {
+            "review_source": str(input_path.expanduser()),
+            "distilled_fact": distilled_fact,
+            "promote_to": promote_to,
+            "sent_at": fields.get("sent_at", ""),
+            "sender": fields.get("sender", ""),
+            "reasons": fields.get("reasons", ""),
+        }
+        applied.append({"message_id": message_id, "distilled_fact": distilled_fact, "promote_to": promote_to})
+        if dry_run:
+            continue
+        con.execute(
+            "INSERT INTO message_events(message_id, event_type, note) VALUES(?, ?, ?)",
+            (message_id, "promoted", json.dumps(note, ensure_ascii=False, sort_keys=True)),
+        )
+        if mark_processed_flag:
+            con.execute("UPDATE messages SET ai_processed = 1 WHERE id = ?", (message_id,))
+    if not dry_run:
+        con.commit()
+    return {
+        "input": str(input_path.expanduser()),
+        "checked_items": sum(1 for item in items if item["checked"]),
+        "applied_count": len(applied),
+        "skipped_count": len(skipped),
+        "dry_run": dry_run,
+        "mark_processed": mark_processed_flag,
+        "applied": applied,
+        "skipped": skipped,
+    }
+
+
+def promoted_rows(con: sqlite3.Connection, limit: int = 100) -> list[dict]:
+    init_db(con)
+    rows = con.execute(
+        """
+        SELECT
+          e.id AS event_id,
+          e.event_at,
+          e.note,
+          m.id AS message_id,
+          m.sent_at,
+          m.sender,
+          c.chat_name
+        FROM message_events e
+        JOIN messages m ON m.id = e.message_id
+        JOIN chats c ON c.id = m.chat_id
+        WHERE e.event_type = 'promoted'
+        ORDER BY e.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    promoted = []
+    for row in rows:
+        note = json.loads(row["note"] or "{}")
+        promoted.append(
+            {
+                "event_id": row["event_id"],
+                "event_at": row["event_at"],
+                "message_id": row["message_id"],
+                "chat_name": row["chat_name"],
+                "sent_at": row["sent_at"],
+                "sender": row["sender"],
+                "distilled_fact": note.get("distilled_fact", ""),
+                "promote_to": note.get("promote_to", ""),
+                "reasons": note.get("reasons", ""),
+            }
+        )
+    return promoted
+
+
+def print_promoted(rows: list[dict], fmt: str) -> None:
+    if fmt == "json":
+        print(json.dumps(rows, ensure_ascii=False, indent=2))
+        return
+    if not rows:
+        print("No promoted items found.")
+        return
+    current_target = None
+    for row in rows:
+        if row["promote_to"] != current_target:
+            current_target = row["promote_to"]
+            print(f"\n## {current_target}")
+        print(
+            f"- message_id={row['message_id']} {row['sent_at'] or 'unknown-time'} "
+            f"{row['chat_name']} / {row['sender']}: {row['distilled_fact']}"
+        )
+
+
 def find_person(con: sqlite3.Connection, name_or_alias: str) -> sqlite3.Row | None:
     normalized = normalize_space(name_or_alias)
     direct = con.execute(
@@ -1619,6 +1760,15 @@ def build_parser() -> argparse.ArgumentParser:
     promote_review_p.add_argument("--redact", action="store_true")
     promote_review_p.add_argument("--output", type=Path, default=PROJECT_DIR / "exports" / "promote-review.md")
 
+    apply_review_p = sub.add_parser("apply-promote-review")
+    apply_review_p.add_argument("--input", type=Path, required=True)
+    apply_review_p.add_argument("--dry-run", action="store_true")
+    apply_review_p.add_argument("--keep-pending", action="store_true", help="Record promoted items without marking messages as processed")
+
+    promoted_p = sub.add_parser("promoted")
+    promoted_p.add_argument("--limit", type=int, default=100)
+    promoted_p.add_argument("--format", choices=["markdown", "json"], default="markdown")
+
     mark_p = sub.add_parser("mark-processed")
     mark_p.add_argument("--ids", required=True, help="Comma-separated message IDs")
     mark_p.add_argument("--event-type", default="summarized")
@@ -1721,6 +1871,13 @@ def main(argv: list[str] | None = None) -> int:
             init_db(con)
             result = export_promote_review(con, args.output, args.chat, args.limit, args.redact)
             print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0
+        if args.command == "apply-promote-review":
+            result = apply_promote_review(con, args.input, args.dry_run, not args.keep_pending)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0
+        if args.command == "promoted":
+            print_promoted(promoted_rows(con, args.limit), args.format)
             return 0
         if args.command == "mark-processed":
             init_db(con)
