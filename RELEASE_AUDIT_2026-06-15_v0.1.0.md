@@ -52,6 +52,14 @@ GitHub Actions:
 - `Package CLI and expand parser fixtures`: success
 - `Update Actions to Node 24 compatible versions`: success
 - `Add reviewed promote workflow`: success
+- `Prepare v0.1.0 release notes`: success
+
+Clean checkout verification:
+
+- cloned `https://github.com/cyakkunnlove/local-chat-memory.git` into a temporary directory
+- ran unit tests: 18 OK
+- ran py_compile: OK
+- ran `python3 -m local_chat_memory doctor --config config.example.json`: OK
 
 Public-visible privacy/security scan:
 

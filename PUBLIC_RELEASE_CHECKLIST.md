@@ -17,6 +17,8 @@ Release target: `v0.1.0`
 - [x] Confirm GitHub Actions pass.
 - [x] Add changelog or release notes.
 - [x] Add release audit summary.
+- [x] Verify GitHub Actions on release-prep commit.
+- [x] Verify a clean checkout from GitHub.
 - [ ] Create and push `v0.1.0` tag.
 - [ ] Create GitHub release.
 
