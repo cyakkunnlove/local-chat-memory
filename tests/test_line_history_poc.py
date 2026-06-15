@@ -44,13 +44,14 @@ class LineHistoryPocTest(unittest.TestCase):
             try:
                 os.chdir(cwd)
                 with mock.patch.dict(os.environ, {}, clear=True):
+                    expected_db = Path.cwd() / "data" / "local-chat-memory.db"
                     self.assertEqual(
                         poc.default_db_path(),
-                        Path(cwd) / "data" / "local-chat-memory.db",
+                        expected_db,
                     )
                     parser = poc.build_parser()
                     args = parser.parse_args(["status"])
-                    self.assertEqual(args.db, Path(cwd) / "data" / "local-chat-memory.db")
+                    self.assertEqual(args.db, expected_db)
             finally:
                 os.chdir(original_cwd)
 
