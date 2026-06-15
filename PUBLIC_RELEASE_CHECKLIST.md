@@ -38,11 +38,12 @@ Release target: `v0.1.1`
 - [x] Confirm `schema.sql` is included in built wheels.
 - [x] Confirm fresh installed-wheel smoke passes outside the source tree.
 - [x] Confirm build, `twine check`, and distribution audit pass.
-- [ ] Verify GitHub Actions on release-prep commit.
-- [ ] Create and push `v0.1.1` tag.
-- [ ] Create GitHub release.
+- [x] Verify GitHub Actions on release-prep commit.
+- [x] Create and push `v0.1.1` tag.
+- [x] Create GitHub release.
 
 Audit summary: `RELEASE_AUDIT_2026-06-15_v0.1.1.md`
+Release URL: https://github.com/cyakkunnlove/local-chat-memory/releases/tag/v0.1.1
 
 ## PyPI Readiness Checklist
 
