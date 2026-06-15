@@ -52,6 +52,21 @@ Before uploading anywhere, confirm:
 3. Run `local-chat-memory doctor --config config.example.json`.
 4. Only then consider publishing the same version to PyPI.
 
+Preferred production publishing uses GitHub Actions Trusted Publishing, not a
+local API token:
+
+```bash
+gh workflow run publish-pypi.yml --ref main -f ref=v0.1.2
+```
+
+The PyPI pending publisher should match:
+
+- Project name: `local-chat-memory`
+- Owner: `cyakkunnlove`
+- Repository: `local-chat-memory`
+- Workflow: `publish-pypi.yml`
+- Environment: `pypi`
+
 Do not upload from a working tree that contains private local data. Do not
 publish to PyPI without explicit release approval.
 
