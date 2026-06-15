@@ -15,9 +15,15 @@ jobs:
       - name: Run unit tests
         run: python3 -m unittest discover tests
       - name: Compile scripts
-        run: python3 -m py_compile line_history_poc.py local_chat_memory/*.py scripts/export-current-line-chat.py
+        run: python3 -m py_compile line_history_poc.py local_chat_memory/*.py scripts/export-current-line-chat.py scripts/audit-dist.py
       - name: Check package entrypoint
         run: |
           python3 -m pip install -e .
           local-chat-memory doctor --config config.example.json
           python3 -m local_chat_memory doctor --config config.example.json
+      - name: Build and audit distributions
+        run: |
+          python3 -m pip install build twine
+          python3 -m build
+          python3 -m twine check dist/*
+          python3 scripts/audit-dist.py dist/*

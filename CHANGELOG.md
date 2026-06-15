@@ -45,3 +45,5 @@ Initial public release.
 - Synthetic fixture and parser coverage for `YYYY-MM-DD HH:MM - sender: body` rows.
 - Synthetic fixture and parser coverage for WhatsApp-style `M/D/YY, h:mm PM - sender: body` rows.
 - AM/PM timestamp normalization for supported message formats.
+- `docs/PUBLISHING.md` with a TestPyPI-first publishing checklist.
+- Distribution audit script for checking built sdist/wheel contents before upload.

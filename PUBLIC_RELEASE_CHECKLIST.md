@@ -25,6 +25,22 @@ Release target: `v0.1.0`
 Audit summary: `RELEASE_AUDIT_2026-06-15_v0.1.0.md`
 Release URL: https://github.com/cyakkunnlove/local-chat-memory/releases/tag/v0.1.0
 
+## PyPI Readiness Checklist
+
+Publishing to PyPI is intentionally deferred. Before TestPyPI or PyPI upload:
+
+- [x] Add a publishing checklist document.
+- [x] Add build verification to CI.
+- [x] Add metadata validation with `twine check`.
+- [x] Add a distribution audit for sdist/wheel contents.
+- [x] Document TestPyPI-first upload order.
+- [ ] Confirm package name availability immediately before upload.
+- [ ] Run final privacy/security scan on the exact release commit.
+- [ ] Upload to TestPyPI and install into a fresh virtual environment.
+- [ ] Publish to PyPI only after explicit release approval.
+
+Checklist doc: `docs/PUBLISHING.md`
+
 ## Original Public Seed Checklist
 
 Before publishing this repository:

@@ -13,6 +13,12 @@ The first supported format is LINE desktop text exports, but the core model is g
 
 No credentials, private app database parsing, screenshots, or external AI API calls are required.
 
+## Alpha Safety Notice
+
+This is an early local-first tool. Use it at your own risk, keep backups of
+source exports and SQLite databases, and review any promoted facts before using
+them in another system or sharing them with other people.
+
 Synthetic parser fixtures currently cover:
 
 - LINE-style date sections with tab-separated messages
@@ -20,6 +26,9 @@ Synthetic parser fixtures currently cover:
 - ISO date/time tab-separated rows
 - `YYYY-MM-DD HH:MM - sender: body` rows
 - WhatsApp-style `M/D/YY, h:mm PM - sender: body` rows
+
+PyPI publishing is not enabled yet. See [docs/PUBLISHING.md](docs/PUBLISHING.md) for
+the pre-publish build, metadata, and distribution audit checklist.
 
 ## Quick Start
 
