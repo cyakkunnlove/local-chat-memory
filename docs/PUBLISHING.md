@@ -53,3 +53,6 @@ Before uploading anywhere, confirm:
 
 Do not upload from a working tree that contains private local data. Do not
 publish to PyPI without explicit release approval.
+
+See [TESTPYPI.md](TESTPYPI.md) for the credential guardrails and copy-paste
+TestPyPI upload/install verification commands.

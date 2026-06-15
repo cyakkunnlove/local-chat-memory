@@ -29,6 +29,7 @@ Synthetic parser fixtures currently cover:
 
 PyPI publishing is not enabled yet. See [docs/PUBLISHING.md](docs/PUBLISHING.md) for
 the pre-publish build, metadata, and distribution audit checklist.
+See [docs/TESTPYPI.md](docs/TESTPYPI.md) for the TestPyPI-first upload runbook.
 
 ## Quick Start
 
