@@ -56,6 +56,7 @@ Publishing to PyPI is intentionally deferred. Before TestPyPI or PyPI upload:
 - [x] Add a fresh wheel install smoke check to CI.
 - [x] Document TestPyPI-first upload order.
 - [x] Add TestPyPI upload runbook and credential guardrails.
+- [x] Add manual TestPyPI Trusted Publishing workflow.
 - [x] Confirm package name availability before `v0.1.1` release prep.
 - [ ] Run final privacy/security scan on the exact release commit.
 - [ ] Upload to TestPyPI and install into a fresh virtual environment.

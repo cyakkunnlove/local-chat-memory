@@ -44,6 +44,31 @@ python3 scripts/audit-dist.py dist/*
 
 ## Upload To TestPyPI
 
+### Option A: Trusted Publishing
+
+This is the preferred path because it avoids local API tokens.
+
+Before running the workflow, configure a pending Trusted Publisher in TestPyPI
+for:
+
+- PyPI project name: `local-chat-memory`
+- GitHub owner: `cyakkunnlove`
+- GitHub repository: `local-chat-memory`
+- Workflow name: `publish-testpypi.yml`
+- Environment name: `testpypi`
+
+Then run the manual GitHub Actions workflow:
+
+```bash
+gh workflow run publish-testpypi.yml --ref main -f ref=v0.1.1
+```
+
+The workflow builds from the selected release ref, runs tests and distribution
+audits, installs the built wheel in a fresh virtual environment, and then
+publishes to TestPyPI using GitHub OIDC.
+
+### Option B: Local Token Upload
+
 ```bash
 TWINE_NON_INTERACTIVE=1 \
   /tmp/local-chat-memory-build-venv/bin/python -m twine upload \

@@ -1,0 +1,71 @@
+name: Publish TestPyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to publish, usually a release tag"
+        required: true
+        default: "v0.1.1"
+
+jobs:
+  build:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Run unit tests
+        run: python3 -m unittest discover tests
+      - name: Compile scripts
+        run: python3 -m py_compile line_history_poc.py local_chat_memory/*.py scripts/export-current-line-chat.py scripts/audit-dist.py
+      - name: Check package entrypoint
+        run: |
+          python3 -m pip install -e .
+          local-chat-memory doctor --config config.example.json
+          python3 -m local_chat_memory doctor --config config.example.json
+      - name: Build and audit distributions
+        run: |
+          python3 -m pip install build twine
+          python3 -m build
+          python3 -m twine check dist/*
+          python3 scripts/audit-dist.py dist/*
+      - name: Install built wheel in fresh venv
+        run: |
+          smoke_dir="$(mktemp -d)"
+          python3 -m venv "$smoke_dir/venv"
+          "$smoke_dir/venv/bin/python" -m pip install dist/*.whl
+          cd "$smoke_dir"
+          LOCAL_CHAT_MEMORY_DB="$smoke_dir/local-chat-memory.db" "$smoke_dir/venv/bin/local-chat-memory" init
+          LOCAL_CHAT_MEMORY_DB="$smoke_dir/local-chat-memory.db" "$smoke_dir/venv/bin/local-chat-memory" status
+          "$smoke_dir/venv/bin/python" -m local_chat_memory doctor --config "$GITHUB_WORKSPACE/config.example.json"
+      - name: Upload distributions artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+          if-no-files-found: error
+
+  publish-testpypi:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/local-chat-memory/
+    permissions:
+      id-token: write
+    steps:
+      - name: Download distributions artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish package distributions to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
