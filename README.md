@@ -175,5 +175,7 @@ python3 -m local_chat_memory doctor --config config.example.json
 
 ## Release Notes
 
+- `CHANGELOG.md#v011---2026-06-15`
 - `CHANGELOG.md`
 - `RELEASE_AUDIT_2026-06-15_v0.1.0.md`
+- `RELEASE_AUDIT_2026-06-15_v0.1.1.md`

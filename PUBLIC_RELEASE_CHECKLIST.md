@@ -25,6 +25,25 @@ Release target: `v0.1.0`
 Audit summary: `RELEASE_AUDIT_2026-06-15_v0.1.0.md`
 Release URL: https://github.com/cyakkunnlove/local-chat-memory/releases/tag/v0.1.0
 
+## v0.1.1 Status
+
+Release target: `v0.1.1`
+
+- [x] Confirm package metadata version is `0.1.1`.
+- [x] Confirm no real chat exports are present.
+- [x] Confirm no SQLite database is present.
+- [x] Confirm no `config.local.json` is present.
+- [x] Confirm no export backups or generated private reports are present.
+- [x] Confirm common secret/token patterns are absent from public-visible files.
+- [x] Confirm `schema.sql` is included in built wheels.
+- [x] Confirm fresh installed-wheel smoke passes outside the source tree.
+- [x] Confirm build, `twine check`, and distribution audit pass.
+- [ ] Verify GitHub Actions on release-prep commit.
+- [ ] Create and push `v0.1.1` tag.
+- [ ] Create GitHub release.
+
+Audit summary: `RELEASE_AUDIT_2026-06-15_v0.1.1.md`
+
 ## PyPI Readiness Checklist
 
 Publishing to PyPI is intentionally deferred. Before TestPyPI or PyPI upload:
@@ -35,7 +54,7 @@ Publishing to PyPI is intentionally deferred. Before TestPyPI or PyPI upload:
 - [x] Add a distribution audit for sdist/wheel contents.
 - [x] Add a fresh wheel install smoke check to CI.
 - [x] Document TestPyPI-first upload order.
-- [ ] Confirm package name availability immediately before upload.
+- [x] Confirm package name availability before `v0.1.1` release prep.
 - [ ] Run final privacy/security scan on the exact release commit.
 - [ ] Upload to TestPyPI and install into a fresh virtual environment.
 - [ ] Publish to PyPI only after explicit release approval.

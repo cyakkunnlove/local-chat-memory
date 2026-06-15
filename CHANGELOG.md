@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.1.1 - 2026-06-15
+
+Packaging and pre-publish safety release.
+
+### Added
+
+- Synthetic fixture and parser coverage for `YYYY-MM-DD HH:MM - sender: body` rows.
+- Synthetic fixture and parser coverage for WhatsApp-style `M/D/YY, h:mm PM - sender: body` rows.
+- AM/PM timestamp normalization for supported message formats.
+- `docs/PUBLISHING.md` with a TestPyPI-first publishing checklist.
+- Distribution audit script for checking built sdist/wheel contents before upload.
+- CI smoke check that installs the built wheel into a fresh virtual environment.
+
+### Fixed
+
+- Include the SQLite schema in built wheels so installed CLI commands can initialize databases outside the source tree.
+
+### Publishing
+
+- TestPyPI and PyPI publishing remain deferred.
+- Use at your own risk while the project is in alpha.
+- Keep source exports and SQLite databases backed up.
+- Review promoted facts before copying them into another system or sharing them with other people.
+
 ## v0.1.0 - 2026-06-15
 
 Initial public release.
@@ -37,18 +61,3 @@ Initial public release.
 - The first parser target is LINE desktop text exports; additional chat export variants are tracked in issue #2.
 - The macOS LINE helper is optional desktop automation and should be treated as best-effort.
 - No PyPI package is published yet; use a virtual environment and editable install from GitHub/source.
-
-## Unreleased
-
-### Added
-
-- Synthetic fixture and parser coverage for `YYYY-MM-DD HH:MM - sender: body` rows.
-- Synthetic fixture and parser coverage for WhatsApp-style `M/D/YY, h:mm PM - sender: body` rows.
-- AM/PM timestamp normalization for supported message formats.
-- `docs/PUBLISHING.md` with a TestPyPI-first publishing checklist.
-- Distribution audit script for checking built sdist/wheel contents before upload.
-- CI smoke check that installs the built wheel into a fresh virtual environment.
-
-### Fixed
-
-- Include the SQLite schema in built wheels so installed CLI commands can initialize databases outside the source tree.
