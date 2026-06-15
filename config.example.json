@@ -1,0 +1,27 @@
+{
+  "download_dir": "~/Downloads",
+  "processed_dir": null,
+  "default_self_aliases": ["me"],
+  "default_wiki_path": null,
+  "chats": [
+    {
+      "chat_name": "Example Chat",
+      "chat_kind": "personal",
+      "filename_contains": "[LINE]Example Chat",
+      "participants": [
+        {
+          "display_name": "Example Chat",
+          "aliases": ["Example Chat"],
+          "wiki_path": null
+        },
+        {
+          "display_name": "Me",
+          "aliases": ["me"],
+          "wiki_path": null
+        }
+      ],
+      "purpose": "Example local chat memory",
+      "wiki_path": null
+    }
+  ]
+}

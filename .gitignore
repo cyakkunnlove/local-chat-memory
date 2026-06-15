@@ -1,0 +1,11 @@
+data/
+exports/
+var/
+config.local.json
+.taskconfig.md
+*.db
+*.sqlite
+*.sqlite3
+__pycache__/
+*.pyc
+[LINE]*.txt
