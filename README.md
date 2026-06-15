@@ -27,9 +27,14 @@ Synthetic parser fixtures currently cover:
 - `YYYY-MM-DD HH:MM - sender: body` rows
 - WhatsApp-style `M/D/YY, h:mm PM - sender: body` rows
 
-PyPI publishing is not enabled yet. See [docs/PUBLISHING.md](docs/PUBLISHING.md) for
-the pre-publish build, metadata, and distribution audit checklist.
-See [docs/TESTPYPI.md](docs/TESTPYPI.md) for the TestPyPI-first upload runbook.
+The package is available on PyPI:
+
+```bash
+python3 -m pip install local-chat-memory
+```
+
+See [docs/PUBLISHING.md](docs/PUBLISHING.md) and [docs/TESTPYPI.md](docs/TESTPYPI.md)
+for the release checklist and TestPyPI-first upload runbook.
 
 ## Quick Start
 
@@ -44,10 +49,16 @@ Or install the local CLI entrypoint in a virtual environment:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python3 -m pip install -e .
+python3 -m pip install local-chat-memory
 local-chat-memory init
 local-chat-memory import --chat "Sample Chat" --file fixtures/sample_line_export_ja.txt
 local-chat-memory health-report
+```
+
+For local development from a source checkout:
+
+```bash
+python3 -m pip install -e .
 ```
 
 Default DB path:
@@ -99,6 +110,17 @@ local-chat-memory export-promote-review --redact --output exports/promote-review
 local-chat-memory apply-promote-review --input exports/promote-review.md --dry-run
 local-chat-memory promoted
 ```
+
+## Use Cases
+
+- Keep a private, searchable archive of personal chat exports in SQLite.
+- Build local-first AI memory workflows without uploading raw conversations to
+  external services.
+- Review recurring TODOs, decisions, questions, and project notes before
+  promoting them into a second-brain system.
+- Test chat-export parsers against synthetic fixtures instead of real private
+  conversations.
+- Generate redacted support and health reports when debugging imports.
 
 The original script form remains supported:
 
@@ -169,6 +191,16 @@ python3 line_history_poc.py export-pending --redact --output exports/pending-red
 python3 line_history_poc.py export-promote-review --redact --output exports/promote-review.md
 ```
 
+## Roadmap
+
+- Add more parser fixtures for LINE, WhatsApp, and DM export variants.
+- Expand import diagnostics so malformed rows and timezone assumptions are
+  easier to review.
+- Improve reviewed-fact promotion with clearer categories and safer defaults.
+- Add privacy-preserving examples for local AI summarization and retrieval.
+- Keep release workflows TestPyPI-first, with fresh-install smoke checks before
+  production PyPI uploads.
+
 ## Development
 
 ```bash
@@ -179,7 +211,8 @@ python3 -m local_chat_memory doctor --config config.example.json
 
 ## Release Notes
 
-- `CHANGELOG.md#v011---2026-06-15`
+- `CHANGELOG.md#v012---2026-06-15`
 - `CHANGELOG.md`
 - `RELEASE_AUDIT_2026-06-15_v0.1.0.md`
 - `RELEASE_AUDIT_2026-06-15_v0.1.1.md`
+- `RELEASE_AUDIT_2026-06-15_v0.1.2.md`
