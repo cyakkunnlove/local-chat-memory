@@ -19,10 +19,11 @@ Release target: `v0.1.0`
 - [x] Add release audit summary.
 - [x] Verify GitHub Actions on release-prep commit.
 - [x] Verify a clean checkout from GitHub.
-- [ ] Create and push `v0.1.0` tag.
-- [ ] Create GitHub release.
+- [x] Create and push `v0.1.0` tag.
+- [x] Create GitHub release.
 
 Audit summary: `RELEASE_AUDIT_2026-06-15_v0.1.0.md`
+Release URL: https://github.com/cyakkunnlove/local-chat-memory/releases/tag/v0.1.0
 
 ## Original Public Seed Checklist
 
