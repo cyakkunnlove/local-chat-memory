@@ -6,7 +6,7 @@ on:
       ref:
         description: "Git ref to publish, usually a release tag"
         required: true
-        default: "v0.1.1"
+        default: "v0.1.2"
 
 jobs:
   build:
@@ -41,8 +41,9 @@ jobs:
           python3 -m venv "$smoke_dir/venv"
           "$smoke_dir/venv/bin/python" -m pip install dist/*.whl
           cd "$smoke_dir"
-          LOCAL_CHAT_MEMORY_DB="$smoke_dir/local-chat-memory.db" "$smoke_dir/venv/bin/local-chat-memory" init
-          LOCAL_CHAT_MEMORY_DB="$smoke_dir/local-chat-memory.db" "$smoke_dir/venv/bin/local-chat-memory" status
+          "$smoke_dir/venv/bin/local-chat-memory" init
+          test -f "$smoke_dir/data/local-chat-memory.db"
+          "$smoke_dir/venv/bin/local-chat-memory" status
           "$smoke_dir/venv/bin/python" -m local_chat_memory doctor --config "$GITHUB_WORKSPACE/config.example.json"
       - name: Upload distributions artifact
         uses: actions/upload-artifact@v6

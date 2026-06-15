@@ -33,6 +33,7 @@ jobs:
           python3 -m venv "$smoke_dir/venv"
           "$smoke_dir/venv/bin/python" -m pip install dist/*.whl
           cd "$smoke_dir"
-          LOCAL_CHAT_MEMORY_DB="$smoke_dir/local-chat-memory.db" "$smoke_dir/venv/bin/local-chat-memory" init
-          LOCAL_CHAT_MEMORY_DB="$smoke_dir/local-chat-memory.db" "$smoke_dir/venv/bin/local-chat-memory" status
+          "$smoke_dir/venv/bin/local-chat-memory" init
+          test -f "$smoke_dir/data/local-chat-memory.db"
+          "$smoke_dir/venv/bin/local-chat-memory" status
           "$smoke_dir/venv/bin/python" -m local_chat_memory doctor --config "$GITHUB_WORKSPACE/config.example.json"

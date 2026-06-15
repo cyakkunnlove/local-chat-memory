@@ -88,12 +88,13 @@ python3 -m venv /tmp/local-chat-memory-testpypi-venv
 /tmp/local-chat-memory-testpypi-venv/bin/python -m pip install \
   --index-url https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ \
-  local-chat-memory==0.1.1
+  local-chat-memory==0.1.2
 
-LOCAL_CHAT_MEMORY_DB=/tmp/local-chat-memory-testpypi.db \
-  /tmp/local-chat-memory-testpypi-venv/bin/local-chat-memory init
-LOCAL_CHAT_MEMORY_DB=/tmp/local-chat-memory-testpypi.db \
-  /tmp/local-chat-memory-testpypi-venv/bin/local-chat-memory status
+mkdir -p /tmp/local-chat-memory-testpypi-smoke
+cd /tmp/local-chat-memory-testpypi-smoke
+/tmp/local-chat-memory-testpypi-venv/bin/local-chat-memory init
+test -f /tmp/local-chat-memory-testpypi-smoke/data/local-chat-memory.db
+/tmp/local-chat-memory-testpypi-venv/bin/local-chat-memory status
 /tmp/local-chat-memory-testpypi-venv/bin/python -m local_chat_memory doctor \
   --config /tmp/local-chat-memory-release/config.example.json
 ```

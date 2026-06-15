@@ -21,9 +21,9 @@ from pathlib import Path
 from typing import Iterable
 
 PARSER_VERSION = "local-chat-memory-v0.1"
-PROJECT_DIR = Path(__file__).resolve().parent
-DEFAULT_DB = Path(os.environ.get("LOCAL_CHAT_MEMORY_DB", PROJECT_DIR / "data" / "local-chat-memory.db"))
-SCHEMA_PATH = PROJECT_DIR / "schema.sql"
+SOURCE_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path.cwd()
+SCHEMA_PATH = SOURCE_DIR / "schema.sql"
 CONFIG_TEMPLATE = {
     "download_dir": "~/Downloads",
     "processed_dir": None,
@@ -287,6 +287,10 @@ def init_db(con: sqlite3.Connection) -> None:
     con.executescript(read_schema_text())
     ensure_migrations(con)
     con.commit()
+
+
+def default_db_path() -> Path:
+    return Path(os.environ.get("LOCAL_CHAT_MEMORY_DB", Path.cwd() / "data" / "local-chat-memory.db")).expanduser()
 
 
 def read_schema_text() -> str:
@@ -704,8 +708,9 @@ def doctor_report(config_path: Path | None = None) -> dict:
     report: dict[str, object] = {
         "python": sys.version.split()[0],
         "platform": sys.platform,
-        "project_dir": str(PROJECT_DIR),
-        "default_db": str(DEFAULT_DB),
+        "source_dir": str(SOURCE_DIR),
+        "work_dir": str(Path.cwd()),
+        "default_db": str(default_db_path()),
         "tools": {
             "sqlite3_module": True,
             "osascript": shutil_mod.which("osascript") is not None,
@@ -1702,7 +1707,7 @@ def parse_ids(value: str) -> list[int]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--db", type=Path, default=DEFAULT_DB)
+    parser.add_argument("--db", type=Path, default=default_db_path())
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("init")

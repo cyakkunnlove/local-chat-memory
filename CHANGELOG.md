@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.1.2 - 2026-06-15
+
+Installed CLI default data path fix.
+
+### Fixed
+
+- Use the current working directory for the default SQLite database path in installed CLI runs, matching the documented `./data/local-chat-memory.db` behavior.
+- Keep schema loading tied to the package/source location so installed wheels can still initialize databases outside the source tree.
+
+### Changed
+
+- CI and TestPyPI publish smoke checks now install the built wheel and run `local-chat-memory init` without `LOCAL_CHAT_MEMORY_DB`, then assert that `./data/local-chat-memory.db` was created.
+
 ## v0.1.1 - 2026-06-15
 
 Packaging and pre-publish safety release.

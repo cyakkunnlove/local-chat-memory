@@ -2,8 +2,10 @@ import sqlite3
 import tempfile
 import unittest
 import importlib.util
+import os
 import textwrap
 from pathlib import Path
+from unittest import mock
 
 import sys
 
@@ -35,6 +37,27 @@ class LineHistoryPocTest(unittest.TestCase):
 
     def count_messages(self) -> int:
         return self.con.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
+
+    def test_default_db_path_uses_current_working_directory(self):
+        with tempfile.TemporaryDirectory() as cwd:
+            original_cwd = Path.cwd()
+            try:
+                os.chdir(cwd)
+                with mock.patch.dict(os.environ, {}, clear=True):
+                    self.assertEqual(
+                        poc.default_db_path(),
+                        Path(cwd) / "data" / "local-chat-memory.db",
+                    )
+                    parser = poc.build_parser()
+                    args = parser.parse_args(["status"])
+                    self.assertEqual(args.db, Path(cwd) / "data" / "local-chat-memory.db")
+            finally:
+                os.chdir(original_cwd)
+
+    def test_local_chat_memory_db_overrides_default_db_path(self):
+        custom_db = Path(self.tmp.name) / "custom.db"
+        with mock.patch.dict(os.environ, {"LOCAL_CHAT_MEMORY_DB": str(custom_db)}):
+            self.assertEqual(poc.default_db_path(), custom_db)
 
     def test_import_dedupes_overlapping_exports(self):
         first = poc.import_export(

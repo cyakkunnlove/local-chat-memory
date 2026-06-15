@@ -56,6 +56,9 @@ Default DB path:
 ./data/local-chat-memory.db
 ```
 
+For an installed `local-chat-memory` command, `./data` means the directory
+where you run the command, not the Python package installation directory.
+
 Override it with:
 
 ```bash
